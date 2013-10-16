@@ -1,3 +1,3 @@
-import SuffixTrie
+import SuffixAutomation
 
-main = emptyTrie
+main = 1
