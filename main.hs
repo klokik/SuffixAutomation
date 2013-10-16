@@ -1,0 +1,3 @@
+import SuffixTrie
+
+main = emptyTrie
