@@ -47,10 +47,11 @@ applyList ((k,v):xs) aut = applyList xs $ SuffixAutomation { states = M.insert k
 
 addItem :: (Ord a,Show a) => SuffixAutomation a -> a -> SuffixAutomation a
 addItem aut x = SuffixAutomation { states = result, root = (root aut), last_i = cid }
-                 where  patch = map' (\a -> SState {len = (len a)
+                 where  patch = (map' (\a -> SState {len = (len a)
                                                     ,link = (link a)
-                                                    ,next = M.insert x cid (next a)}) $ path ++ [(cid,cur)] ++ clone_list
+                                                    ,next = M.insert x cid (next a)}) $ path) ++ [(cid,cur)] ++ clone_list
                         path = takeWhile' (\a -> x `M.notMember` (next a)) (linkedList (last_i aut) aut)
+                        path_p = init $ takeWhile' (\a -> x `M.member` (next a)) (linkedList ip aut)
                         result = (states (applyList patch aut))
                         cid = M.size (states aut)
                         cur = SState { len = (len ((states aut)M.!(last_i aut)) + 1), link = Just new_link, next = M.empty }
@@ -58,7 +59,7 @@ addItem aut x = SuffixAutomation { states = result, root = (root aut), last_i = 
                         p = (states aut) M.! ip
                         q = (states aut) M.! ((next p)M.!x)
                         clone = (M.size (states aut) + 1,SState { len = len p + 1, link = link q, next = next q})
-                        clone_list = if ip /= -1 && len p + 1 /= len q then [clone] else []
+                        clone_list = if ip /= -1 && len p + 1 /= len q then [clone] ++ (map' (\a -> SState {len=len a,link=Just $ fst clone,next=next a}) path_p) else []
                         new_link = if ip == -1  then    0
                                                 else    if len p + 1 == len q
                                                             then (next p)M.!x
