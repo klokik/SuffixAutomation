@@ -4,7 +4,8 @@ module SuffixAutomation
     SuffixAutomation(),
     empty,
     fromList,
-    addItem
+    addItem,
+    contains
     )where
 
 import qualified Data.Map as M
@@ -67,3 +68,10 @@ addItem aut x = SuffixAutomation { states = result, root = (root aut), last_i = 
 
 fromList :: (Ord a,Show a) => [a] -> SuffixAutomation a
 fromList xs = foldl (addItem) empty xs
+
+contains :: (Ord a,Show a) => SuffixAutomation a -> [a] -> Bool
+contains aut xs = lookup' xs 0
+    where   lookup' [] _ = True
+            lookup' (y:ys) id = if y `elem` (M.keys next_map)   then lookup' ys (next_map M.! y)
+                                                                else False
+                where next_map = next $ (states aut) M.! id
